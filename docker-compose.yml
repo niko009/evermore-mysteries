@@ -1,0 +1,14 @@
+services:
+  app:
+    build:
+      context: .
+    container_name: bacus-evermore-mysteries
+    restart: unless-stopped
+    expose:
+      - "8080"
+    networks:
+      - bacus-net
+
+networks:
+  bacus-net:
+    external: true
