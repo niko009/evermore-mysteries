@@ -1,0 +1,17 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local tooling
+*.log
+.env
+.env.*
+
+# Archives / temp
+*.zip
+*.tar
+*.gz
+.tmp/
+tmp/
