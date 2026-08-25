@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0d1117">
+  <meta name="description" content="Тайны Эвермора — атмосферное браузерное приключение о забытом обещании, древних рунах и тайнах леса.">
+  <meta name="application-name" content="Тайны Эвермора">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+  <title>Тайны Эвермора</title>
+  <link rel="stylesheet" href="style.css?v=2026.08.25.01">
+</head>
+<body>
+  <div id="game-container">
+    <header>
+      <div class="title-block">
+        <h1>Тайны Эвермора</h1>
+        <span class="level-name" id="level-name">Уровень 1 — Забытый лес</span>
+      </div>
+      <div id="hud">
+        <div class="keys-display" id="keys-display">
+          Ключи:
+          <span id="key1" class="key-icon locked" title="Ключ 1">🔑</span>
+          <span id="key2" class="key-icon locked" title="Ключ 2">🔑</span>
+          <span id="key3" class="key-icon locked" title="Ключ 3">🔑</span>
+        </div>
+        <div class="inv-display">
+          <span title="Монеты">🪙 <strong id="coin-count">0</strong></span>
+          <span title="Подсказки">💡 <strong id="hint-count">0</strong></span>
+        </div>
+        <span id="status">Исследуй...</span>
+      </div>
+      <div class="header-actions">
+        <button id="btn-inv" class="icon-btn" title="Инвентарь (I)">🎒</button>
+        <button id="btn-mute" class="icon-btn" title="Звук вкл/выкл">🔊</button>
+        <button id="btn-save" class="icon-btn" title="Сохранить">💾</button>
+      </div>
+    </header>
+
+    <canvas id="game-canvas" width="960" height="576"></canvas>
+
+    <div id="controls-hint">
+      WASD / Стрелки — ходьба &nbsp;|&nbsp; E — действие &nbsp;|&nbsp; I / 🎒 — инвентарь &nbsp;|&nbsp; 💾 сохранение
+    </div>
+
+    <div id="mobile-controls" aria-label="Управление персонажем">
+      <div class="dpad" aria-label="Направление движения">
+        <button class="touch-btn dpad-up" data-move="up" aria-label="Идти вверх">▲</button>
+        <button class="touch-btn dpad-left" data-move="left" aria-label="Идти влево">◀</button>
+        <button class="touch-btn dpad-down" data-move="down" aria-label="Идти вниз">▼</button>
+        <button class="touch-btn dpad-right" data-move="right" aria-label="Идти вправо">▶</button>
+      </div>
+      <button id="touch-interact" class="touch-btn touch-action" aria-label="Взаимодействовать">E</button>
+    </div>
+
+    <footer class="game-footer">
+      <span>The Mysteries of Evermore</span>
+      <span class="version">v<span id="app-version">2026.08.25.01</span></span>
+    </footer>
+
+    <!-- Модалка взаимодействия -->
+    <div id="interact-modal" class="modal hidden">
+      <div class="modal-content">
+        <h2 id="modal-title">...</h2>
+        <p id="modal-text"></p>
+        <div id="modal-area"></div>
+        <div class="modal-buttons">
+          <button id="modal-action" class="primary">OK</button>
+          <button id="modal-close" class="secondary">Закрыть</button>
+        </div>
+        <p id="modal-feedback" class="feedback"></p>
+      </div>
+    </div>
+
+    <!-- Экран уровня / окончания -->
+    <div id="ending-modal" class="modal hidden">
+      <div class="modal-content ending">
+        <h2 id="ending-title">ПЕРВЫЕ ВОРОТА ОТКРЫТЫ</h2>
+        <p class="ending-sub" id="ending-sub">Но Эвермор показал лишь первую тайну...</p>
+        <div class="ending-art" id="ending-art">🌿 ✨ 🚪 ✨ 🌿</div>
+        <p id="ending-body">Далеко в лесу вспыхивает таинственный зелёный свет.<br>Приключение только начинается.</p>
+        <div class="modal-buttons">
+          <button id="next-level-btn" class="primary">Продолжить путь</button>
+          <button id="restart-btn" class="secondary">С начала</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Инвентарь -->
+    <div id="inv-modal" class="modal hidden">
+      <div class="modal-content inv-panel">
+        <h2>🎒 Инвентарь</h2>
+        <p class="inv-shop-desc">Монеты и подсказки — в шапке экрана. Здесь только предметы.</p>
+        <div class="inv-items" id="inv-items-list"></div>
+        <hr class="inv-hr" />
+        <h3>Подсказки</h3>
+        <button id="btn-buy-hint" class="primary">Купить подсказку (3 🪙)</button>
+        <button id="btn-use-hint" class="secondary" style="width:100%;margin-top:6px;">Использовать подсказку</button>
+        <p id="hint-result" class="feedback"></p>
+        <div class="modal-buttons" style="margin-top:16px;">
+          <button id="inv-close" class="secondary">Закрыть</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Стартовый экран -->
+    <div id="start-modal" class="modal">
+      <div class="modal-content ending">
+        <h2>Тайны Эвермора</h2>
+        <p class="ending-sub">Средневековое приключение</p>
+        <div class="ending-art">🌲 🗝️ 🏰 🗝️ 🌲</div>
+        <p>Говорят, Эвермор — не место, а <em>обещание</em>.<br>
+        Когда-то здесь жили те, кто говорил с лесом.<br>
+        Потом свет погас. Остались ключи, руны… и шёпот.</p>
+        <p style="color:#8b949e;font-size:0.9rem;margin-top:8px;">Иди по следу: сундук — дверь — сундук — дверь. Лес не любит тех, кто спешит.</p>
+        <div class="modal-buttons">
+          <button id="start-new-btn" class="primary">Начать путь</button>
+          <button id="start-continue-btn" class="secondary">Продолжить</button>
+        </div>
+        <p id="save-info" style="margin-top:12px;font-size:0.85rem;color:#8b949e;"></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js?v=2026.08.25.01"></script>
+  <script src="pwa.js?v=2026.08.25.01"></script>
+</body>
+</html>
