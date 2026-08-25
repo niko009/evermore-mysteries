@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const VERSION = "2026.08.25.01";
+  const VERSION = "2026.08.25.02";
   const versionEl = document.getElementById("app-version");
   if (versionEl) versionEl.textContent = VERSION;
 
